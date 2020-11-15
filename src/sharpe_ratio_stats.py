@@ -4,7 +4,7 @@ import pandas as pd
 from scipy import stats as scipy_stats
 
 
-def estimated_sharpe_ratio(returns):
+def estimated_sharpe_ratio(returns, risk_free=0):
     """
     Calculate the estimated sharpe ratio (risk_free=0).
 
@@ -16,10 +16,12 @@ def estimated_sharpe_ratio(returns):
     -------
     float, pd.Series
     """
-    return returns.mean() / returns.std(ddof=1)
+    if risk_free != np.array:
+        risk_free = np.array(risk_free)
+    return returns.mean() - risk_free.mean() / returns.std(ddof=1)
 
 
-def ann_estimated_sharpe_ratio(returns=None, periods=261, *, sr=None):
+def ann_estimated_sharpe_ratio(returns=None, periods=252, *, sr=None):
     """
     Calculate the annualized estimated sharpe ratio (risk_free=0).
 
@@ -29,7 +31,8 @@ def ann_estimated_sharpe_ratio(returns=None, periods=261, *, sr=None):
 
     periods: int
         How many items in `returns` complete a Year.
-        If returns are daily: 261, weekly: 52, monthly: 12, ...
+        We based the trading calendar on NYSE (252 trading days)
+        If returns are daily: 252, weekly: 52, monthly: 12, ...
 
     sr: float, np.array, pd.Series, pd.DataFrame
         Sharpe ratio to be annualized, it's frequency must be coherent with `periods`
